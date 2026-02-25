@@ -3,7 +3,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppI
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 # ВАЖНО: Вставь свой Bot Token от @BotFather
-BOT_TOKEN = "Y8752235431:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
+BOT_TOKEN = "8752235431:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
 
 # ВАЖНО: Вставь ссылку на свой Mini App от Netlify
 MINI_APP_URL = "https://roaring-kitten-c6bab9.netlify.app"
@@ -139,3 +139,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
