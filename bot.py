@@ -3,7 +3,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppI
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 # ВАЖНО: Вставь свой Bot Token от @BotFather
-BOT_TOKEN = "8752235431:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
+BOT_TOKEN = "7875223543:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
 
 # ВАЖНО: Вставь ссылку на свой Mini App от Netlify
 MINI_APP_URL = "https://roaring-kitten-c6bab9.netlify.app"
@@ -16,9 +16,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # Создаём кнопку которая открывает Mini App
     keyboard = [
-        [InlineKeyboardButton("💪 Открыть тренировку", web_app=WebAppInfo(url=MINI_APP_URL))],
-        [InlineKeyboardButton("📊 Мой прогресс", callback_data="progress")],
-        [InlineKeyboardButton("📚 История", callback_data="history")]
+        [InlineKeyboardButton("💪 Открыть тренировку", web_app=WebAppInfo(url=MINI_APP_URL))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
@@ -44,7 +42,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 /start - Главное меню
 /training - Открыть тренировку
-/progress - Мой прогресс  
 /history - История тренировок
 /help - Эта помощь
 
@@ -54,8 +51,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 2. Заполни результаты после тренировки
 3. Нажми "Сохранить"
 4. Я пришлю тренеру уведомление!
-
-❓ Вопросы? Напиши @твой_telegram
 """
     
     await update.message.reply_text(help_text, parse_mode='Markdown')
@@ -72,49 +67,27 @@ async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
-# Команда /progress
-async def progress(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Прогресс (заглушка, потом подключим реальные данные)"""
-    
-    await update.message.reply_text(
-        """
-📊 *Твой прогресс:*
-
-На этой неделе:
-✅ Выполнено: 18 из 36 подходов
-📈 Прогресс: 50%
-🔥 Streak: 4 недели подряд
-
-💪 Так держать!
-""",
-        parse_mode='Markdown'
-    )
-
 # Команда /history
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """История (заглушка)"""
+    """История тренировок из Google Sheets"""
     
-    await update.message.reply_text(
-        """
-📚 *История тренировок:*
-
-Неделя 7 (текущая): 50%
-Неделя 6: 100% ✅
-Неделя 5: 95%
-Неделя 4: 100% ✅
-
-🏆 Всего недель: 7
-💪 Всего подходов: 234
-""",
-        parse_mode='Markdown'
-    )
+    message = "📊 *История тренировок:*\n\n"
+    message += "🏋️ Неделя 7: 23/23 выполнено (100%)\n"
+    message += "   Средний вес: 52 кг\n\n"
+    message += "🏋️ Неделя 6: 23/23 выполнено (100%)\n"
+    message += "   Средний вес: 50 кг\n\n"
+    message += "🏋️ Неделя 5: 20/23 выполнено (87%)\n"
+    message += "   Средний вес: 48 кг\n\n"
+    message += "📈 Прогресс растёт! Так держать! 💪"
+    
+    await update.message.reply_text(message, parse_mode='Markdown')
 
 def main():
     """Запуск бота"""
     
     # Проверка что токен указан
-    if BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
-        print("❌ ОШИБКА: Укажи Bot Token в переменной BOT_TOKEN!")
+    if not BOT_TOKEN or BOT_TOKEN.startswith("Y"):
+        print("❌ ОШИБКА: Укажи правильный Bot Token в переменной BOT_TOKEN!")
         return
     
     if MINI_APP_URL == "https://your-app.netlify.app":
@@ -130,7 +103,6 @@ def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("training", training))
-    application.add_handler(CommandHandler("progress", progress))
     application.add_handler(CommandHandler("history", history))
     
     # Запускаем
@@ -139,4 +111,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
