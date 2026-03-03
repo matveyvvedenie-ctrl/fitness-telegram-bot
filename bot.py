@@ -74,15 +74,44 @@ async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """История тренировок из Google Sheets"""
     
-    message = "📊 *История тренировок:*\n\n"
-    message += "🏋️ Неделя 7: 23/23 выполнено (100%)\n"
-    message += "   Средний вес: 52 кг\n\n"
-    message += "🏋️ Неделя 6: 23/23 выполнено (100%)\n"
-    message += "   Средний вес: 50 кг\n\n"
-    message += "🏋️ Неделя 5: 20/23 выполнено (87%)\n"
-    message += "   Средний вес: 48 кг\n\n"
-    message += "📈 Прогресс растёт! Так держать! 💪"
-    
+    try:
+        # Читаем credentials из переменной окружения
+        creds_json = os.environ.get('GOOGLE_CREDENTIALS')
+        if not creds_json:
+            await update.message.reply_text("❌ Ошибка конфигурации")
+            return
+        
+        # Подключаемся к Google Sheets
+        creds_dict = json.loads(creds_json)
+        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        client = gspread.authorize(creds)
+        
+        # Открываем таблицу
+        sheet = client.open('Smart_Training_Tracker').worksheet('Архив')
+        
+        # Читаем данные
+        records = sheet.get_all_records()
+        
+        if not records:
+            await update.message.reply_text("📊 История пуста. Завершите первую тренировку!")
+            return
+        
+        # Формируем сообщение
+        message = "📊 *История тренировок:*\n\n"
+        
+        for record in records[-5:]:  # Последние 5 записей
+            message += f"🏋️ {record['Неделя']}: {record['Выполнено']}/{record['Всего']} ({record['Процент']})\n"
+            message += f"   Средний вес: {record['Средний вес']}\n\n"
+        
+        message += "📈 Отличная работа! Продолжай в том же духе! 💪"
+        
+        await update.message.reply_text(message, parse_mode='Markdown')
+        
+    except Exception as e:
+        print(f"Ошибка чтения истории: {e}")
+        await update.message.reply_text("❌ Не удалось загрузить историю")
+
     await update.message.reply_text(message, parse_mode='Markdown')
 
 def main():
@@ -114,6 +143,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
