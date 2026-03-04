@@ -72,13 +72,15 @@ async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Команда /history
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Проверка переменной"""
+    """История тренировок из Google Sheets"""
     
-    creds_json = os.environ.get('GOOGLE_CREDENTIALS')
-    
-    if not creds_json:
-        await update.message.reply_text("❌ Переменная НЕ найдена")
-    else:
+    try:
+        creds_json = os.environ.get('GOOGLE_CREDENTIALS')
+        
+        if not creds_json:
+            await update.message.reply_text("❌ Переменная НЕ найдена")
+            return
+        
         length = len(creds_json)
         await update.message.reply_text(f"✅ Переменная найдена! Длина: {length} символов")
 
@@ -113,8 +115,6 @@ async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(f"Ошибка чтения истории: {e}")
         await update.message.reply_text("❌ Не удалось загрузить историю")
 
-    await update.message.reply_text(message, parse_mode='Markdown')
-
 def main():
     """Запуск бота"""
     
@@ -144,7 +144,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 
 
