@@ -66,6 +66,7 @@ async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Нажми кнопку чтобы открыть программу:",
         reply_markup=reply_markup
     )
+
 # Команда /history
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """История тренировок - мотивация"""
@@ -84,37 +85,6 @@ async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
 """
     
     await update.message.reply_text(message, parse_mode='Markdown')
-
-        # Подключаемся к Google Sheets
-        creds_dict = json.loads(creds_json)
-        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-        client = gspread.authorize(creds)
-        
-        # Открываем таблицу
-        sheet = client.open('Smart_Training_Tracker').worksheet('Архив')
-        
-        # Читаем данные
-        records = sheet.get_all_records()
-        
-        if not records:
-            await update.message.reply_text("📊 История пуста. Завершите первую тренировку!")
-            return
-        
-        # Формируем сообщение
-        message = "📊 *История тренировок:*\n\n"
-        
-        for record in records[-5:]:  # Последние 5 записей
-            message += f"🏋️ {record['Неделя']}: {record['Выполнено']}/{record['Всего']} ({record['Процент']})\n"
-            message += f"   Средний вес: {record['Средний вес']}\n\n"
-        
-        message += "📈 Отличная работа! Продолжай в том же духе! 💪"
-        
-        await update.message.reply_text(message, parse_mode='Markdown')
-        
-    except Exception as e:
-        print(f"Ошибка чтения истории: {e}")
-        await update.message.reply_text("❌ Не удалось загрузить историю")
 
 def main():
     """Запуск бота"""
@@ -145,6 +115,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
 
 
 
