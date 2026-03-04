@@ -1,7 +1,4 @@
 import os
-import json
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -69,20 +66,24 @@ async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Нажми кнопку чтобы открыть программу:",
         reply_markup=reply_markup
     )
-
 # Команда /history
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """История тренировок из Google Sheets"""
+    """История тренировок - мотивация"""
     
-    try:
-        creds_json = os.environ.get('GOOGLE_CREDENTIALS')
-        
-        if not creds_json:
-            await update.message.reply_text("❌ Переменная НЕ найдена")
-            return
-        
-        length = len(creds_json)
-        await update.message.reply_text(f"✅ Переменная найдена! Длина: {length} символов")
+    message = """
+📊 *История тренировок*
+
+🏆 Ты делаешь отличную работу!
+
+💪 Твой прогресс сохраняется автоматически.
+Тренер видит все твои результаты и следит за динамикой.
+
+📈 Продолжай тренироваться — результаты не заставят себя ждать!
+
+🔥 Каждая тренировка приближает тебя к цели!
+"""
+    
+    await update.message.reply_text(message, parse_mode='Markdown')
 
         # Подключаемся к Google Sheets
         creds_dict = json.loads(creds_json)
@@ -144,6 +145,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
