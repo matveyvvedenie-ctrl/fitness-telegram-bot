@@ -72,15 +72,16 @@ async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Команда /history
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """История тренировок из Google Sheets"""
+    """Проверка переменной"""
     
-    try:
-        # Читаем credentials из переменной окружения
-        creds_json = os.environ.get('GOOGLE_CREDENTIALS')
-        if not creds_json:
-            await update.message.reply_text("❌ Ошибка конфигурации")
-            return
-        
+    creds_json = os.environ.get('GOOGLE_CREDENTIALS')
+    
+    if not creds_json:
+        await update.message.reply_text("❌ Переменная НЕ найдена")
+    else:
+        length = len(creds_json)
+        await update.message.reply_text(f"✅ Переменная найдена! Длина: {length} символов")
+
         # Подключаемся к Google Sheets
         creds_dict = json.loads(creds_json)
         scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -143,6 +144,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
