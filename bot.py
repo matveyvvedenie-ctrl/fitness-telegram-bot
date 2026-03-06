@@ -6,7 +6,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 BOT_TOKEN = "8752235431:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
 
 # ВАЖНО: Вставь ссылку на свой Mini App от Netlify
-MINI_APP_URL = "https://roaring-kitten-c6bab9.netlify.app"
+MINI_APP_URL = "tubular-dango-355051.netlify.app"
 
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -115,6 +115,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
