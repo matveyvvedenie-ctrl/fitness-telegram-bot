@@ -1,4 +1,6 @@
 import os
+import json
+from urllib.request import urlopen
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -7,6 +9,9 @@ BOT_TOKEN = "8752235431:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
 
 # ВАЖНО: Вставь ссылку на свой Mini App от Netlify
 MINI_APP_URL = "https://tubular-dango-355051.netlify.app"
+
+# ВАЖНО: Вставь URL твоего Apps Script
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqpppW2wnxH4nAYrZDaIu0XedFB5wfOeUXXokxFz4TpslB-GqD24B9GsPp0i_nTJ4GVA/exec"
 
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -92,18 +97,36 @@ async def progress(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Статистика прогресса из Google Sheets"""
     
     try:
-        # Здесь будем читать из Google Sheets
-        # Пока заглушка
-        message = """
+        # Получаем Chat ID пользователя
+        chat_id = update.effective_user.id
+        
+        # Запрос к Apps Script
+        url = f"{APPS_SCRIPT_URL}?action=progress&chatId={chat_id}"
+        
+        response = urlopen(url)
+        data = json.loads(response.read())
+        
+        if data.get('status') == 'success':
+            stats = data.get('data', {})
+            
+            weeks_total = stats.get('weeksTotal', 0)
+            weeks_completed = stats.get('weeksCompleted', 0)
+            completion_rate = stats.get('completionRate', 0)
+            total_exercises = stats.get('totalExercises', 0)
+            avg_weight = stats.get('avgWeight', 0)
+            
+            message = f"""
 📊 *Твой прогресс*
 
-🏆 Тренируешься: 10 недель
-✅ Завершено: 8 тренировочных недель (80%)
-💪 Выполнено упражнений: 184
-📈 Средний вес: 51.5 кг
+🏆 Тренируешься: {weeks_total} недель
+✅ Завершено: {weeks_completed} тренировочных недель ({completion_rate}%)
+💪 Выполнено упражнений: {total_exercises}
+📈 Средний вес: {avg_weight} кг
 
 Продолжай в том же духе! 🔥
 """
+        else:
+            message = "❌ Не удалось загрузить статистику"
         
         await update.message.reply_text(message, parse_mode='Markdown')
         
