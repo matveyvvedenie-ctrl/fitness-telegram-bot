@@ -43,6 +43,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 /start - Главное меню
 /training - Открыть тренировку
 /history - История тренировок
+/progress - Твой прогресс
 /help - Эта помощь
 
 💪 *Как пользоваться:*
@@ -86,6 +87,30 @@ async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(message, parse_mode='Markdown')
 
+# Команда /progress
+async def progress(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Статистика прогресса из Google Sheets"""
+    
+    try:
+        # Здесь будем читать из Google Sheets
+        # Пока заглушка
+        message = """
+📊 *Твой прогресс*
+
+🏆 Тренируешься: 10 недель
+✅ Завершено: 8 тренировочных недель (80%)
+💪 Выполнено упражнений: 184
+📈 Средний вес: 51.5 кг
+
+Продолжай в том же духе! 🔥
+"""
+        
+        await update.message.reply_text(message, parse_mode='Markdown')
+        
+    except Exception as e:
+        print(f"Ошибка чтения прогресса: {e}")
+        await update.message.reply_text("❌ Не удалось загрузить статистику")
+
 def main():
     """Запуск бота"""
     
@@ -116,29 +141,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-# Команда /progress
-async def progress(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Статистика прогресса из Google Sheets"""
-    
-    try:
-        # Здесь будем читать из Google Sheets
-        # Пока заглушка
-        message = """
-📊 *Твой прогресс*
 
-🏆 Тренируешься: 10 недель
-✅ Завершено: 8 тренировочных недель (80%)
-💪 Выполнено упражнений: 184
-📈 Средний вес: 51.5 кг
-
-Продолжай в том же духе! 🔥
-"""
-        
-        await update.message.reply_text(message, parse_mode='Markdown')
-        
-    except Exception as e:
-        print(f"Ошибка чтения прогресса: {e}")
-        await update.message.reply_text("❌ Не удалось загрузить статистику")
 
 
 
