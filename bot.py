@@ -1,121 +1,140 @@
 import os
-import logging
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Логирование
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+# ВАЖНО: Вставь свой Bot Token от @BotFather
+BOT_TOKEN = "Y8752235431:AAF1kj-ne6mImBcsPac2cAJ6Jrldgo1PAd8"
 
-# URL Mini App
-MINI_APP_URL = "https://tubular-dango-355051.netlify.app"
+# ВАЖНО: Вставь ссылку на свой Mini App от Netlify
+MINI_APP_URL = "https://roaring-kitten-c6bab9.netlify.app"
 
+# Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Команда /start"""
+    """Приветствие и кнопка для открытия Mini App"""
+    
     user = update.effective_user
     
+    # Создаём кнопку которая открывает Mini App
+    keyboard = [
+        [InlineKeyboardButton("💪 Открыть тренировку", web_app=WebAppInfo(url=MINI_APP_URL))],
+        [InlineKeyboardButton("📊 Мой прогресс", callback_data="progress")],
+        [InlineKeyboardButton("📚 История", callback_data="history")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
     welcome_text = f"""
-👋 Привет, {user.first_name}!
+Привет, {user.first_name}! 👋
 
-Я твой фитнес-помощник! 💪
+Я твой персональный фитнес-помощник 💪
 
-🏋️ Открой тренировку: /training
-📊 Посмотри прогресс: /progress
-📜 История: /history
-
-Начни с /training! 🚀
-    """
+Нажми кнопку ниже чтобы открыть программу тренировок:
+"""
     
-    await update.message.reply_text(welcome_text)
-    logger.info(f"User {user.id} ({user.first_name}) started the bot")
+    await update.message.reply_text(
+        welcome_text,
+        reply_markup=reply_markup
+    )
 
+# Команда /help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Команда /help"""
+    """Помощь"""
+    
     help_text = """
-🤖 <b>Доступные команды:</b>
+🤖 *Команды бота:*
 
-/start - Начать работу с ботом
+/start - Главное меню
 /training - Открыть тренировку
+/progress - Мой прогресс  
 /history - История тренировок
-/progress - Статистика и прогресс
-/help - Показать это сообщение
+/help - Эта помощь
 
-📱 Нажми /training чтобы начать тренировку!
-    """
+💪 *Как пользоваться:*
+
+1. Нажми "Открыть тренировку"
+2. Заполни результаты после тренировки
+3. Нажми "Сохранить"
+4. Я пришлю тренеру уведомление!
+
+❓ Вопросы? Напиши @твой_telegram
+"""
     
-    await update.message.reply_text(help_text, parse_mode='HTML')
+    await update.message.reply_text(help_text, parse_mode='Markdown')
 
+# Команда /training
 async def training(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Команда /training - открывает Mini App"""
-    keyboard = [
-        [InlineKeyboardButton(
-            "💪 Открыть тренировку",
-            web_app=WebAppInfo(url=MINI_APP_URL)
-        )]
-    ]
+    """Открыть тренировку"""
+    
+    keyboard = [[InlineKeyboardButton("💪 Открыть тренировку", web_app=WebAppInfo(url=MINI_APP_URL))]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     await update.message.reply_text(
-        "🏋️ <b>Твоя тренировка готова!</b>\n\n"
-        "Нажми кнопку ниже чтобы открыть программу:",
-        reply_markup=reply_markup,
-        parse_mode='HTML'
+        "Нажми кнопку чтобы открыть программу:",
+        reply_markup=reply_markup
     )
 
+# Команда /progress
+async def progress(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Прогресс (заглушка, потом подключим реальные данные)"""
+    
+    await update.message.reply_text(
+        """
+📊 *Твой прогресс:*
+
+На этой неделе:
+✅ Выполнено: 18 из 36 подходов
+📈 Прогресс: 50%
+🔥 Streak: 4 недели подряд
+
+💪 Так держать!
+""",
+        parse_mode='Markdown'
+    )
+
+# Команда /history
 async def history(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Команда /history"""
-    await update.message.reply_text(
-        "📜 <b>История тренировок</b>\n\n"
-        "Ты делаешь отличную работу! 💪\n"
-        "Каждая тренировка приближает тебя к цели!\n\n"
-        "Посмотри детальную статистику: /progress",
-        parse_mode='HTML'
-    )
-
-async def progress_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Команда /progress"""
-    keyboard = [
-        [InlineKeyboardButton(
-            "📊 Открыть статистику",
-            web_app=WebAppInfo(url=MINI_APP_URL)
-        )]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    """История (заглушка)"""
     
     await update.message.reply_text(
-        "📊 <b>Твой прогресс</b>\n\n"
-        "Открой Mini App чтобы посмотреть:\n"
-        "• Графики прогресса\n"
-        "• Личные рекорды\n"
-        "• Статистику по неделям\n\n"
-        "Нажми кнопку ниже:",
-        reply_markup=reply_markup,
-        parse_mode='HTML'
+        """
+📚 *История тренировок:*
+
+Неделя 7 (текущая): 50%
+Неделя 6: 100% ✅
+Неделя 5: 95%
+Неделя 4: 100% ✅
+
+🏆 Всего недель: 7
+💪 Всего подходов: 234
+""",
+        parse_mode='Markdown'
     )
 
 def main():
     """Запуск бота"""
-    token = os.getenv('TELEGRAM_BOT_TOKEN')
     
-    if not token:
-        logger.error("TELEGRAM_BOT_TOKEN не установлен!")
+    # Проверка что токен указан
+    if BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
+        print("❌ ОШИБКА: Укажи Bot Token в переменной BOT_TOKEN!")
         return
     
-    application = Application.builder().token(token).build()
+    if MINI_APP_URL == "https://your-app.netlify.app":
+        print("❌ ОШИБКА: Укажи ссылку на Mini App в переменной MINI_APP_URL!")
+        return
     
-    # Регистрация команд
+    print("🤖 Запуск бота...")
+    
+    # Создаём приложение
+    application = Application.builder().token(BOT_TOKEN).build()
+    
+    # Регистрируем команды
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("training", training))
+    application.add_handler(CommandHandler("progress", progress))
     application.add_handler(CommandHandler("history", history))
-    application.add_handler(CommandHandler("progress", progress_command))
     
-    logger.info("Бот запущен!")
-    
-    # Запуск бота
+    # Запускаем
+    print("✅ Бот запущен!")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
